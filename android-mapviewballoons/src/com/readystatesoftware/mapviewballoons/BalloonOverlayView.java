@@ -26,8 +26,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.android.maps.OverlayItem;
-
 /**
  * A view representing a MapView marker information balloon.
  * <p>
@@ -44,11 +42,11 @@ import com.google.android.maps.OverlayItem;
  * @author Jeff Gilfelt
  *
  */
-public class BalloonOverlayView<Item extends OverlayItem> extends FrameLayout {
+public class BalloonOverlayView extends FrameLayout {
 
 	private LinearLayout layout;
-	private TextView title;
-	private TextView snippet;
+	private TextView titleView;
+	private TextView snippetView;
 	private OnTouchListener customTouchListener;
 
 	/**
@@ -69,8 +67,8 @@ public class BalloonOverlayView<Item extends OverlayItem> extends FrameLayout {
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View v = inflater.inflate(R.layout.balloon_overlay, layout);
-		title = (TextView) v.findViewById(R.id.balloon_item_title);
-		snippet = (TextView) v.findViewById(R.id.balloon_item_snippet);
+		titleView = (TextView) v.findViewById(R.id.balloon_item_title);
+		snippetView = (TextView) v.findViewById(R.id.balloon_item_snippet);
 
 		ImageView close = (ImageView) v.findViewById(R.id.close_img_button);
 		close.setOnClickListener(new OnClickListener() {
@@ -106,25 +104,23 @@ public class BalloonOverlayView<Item extends OverlayItem> extends FrameLayout {
 	}
 	
 	/**
-	 * Sets the view data from a given overlay item.
+	 * Sets the text in the balloon
 	 * 
-	 * @param item - The overlay item containing the relevant view data 
-	 * (title and snippet). 
+	 * @param title The title to display, or null
+	 * @param snippet The subtext to display, or null
 	 */
-	public void setData(Item item) {
-		
+	public void setText(String title, String snippet) {
 		layout.setVisibility(VISIBLE);
-		if (item.getTitle() != null) {
-			title.setVisibility(VISIBLE);
-			title.setText(item.getTitle());
+		setViewText(titleView, title);
+		setViewText(snippetView, snippet);
+	}
+	
+	private void setViewText(TextView view, String text) {
+		if (text!= null) {
+			view.setVisibility(VISIBLE);
+			view.setText(text);
 		} else {
-			title.setVisibility(GONE);
-		}
-		if (item.getSnippet() != null) {
-			snippet.setVisibility(VISIBLE);
-			snippet.setText(item.getSnippet());
-		} else {
-			snippet.setVisibility(GONE);
+			view.setVisibility(GONE);
 		}
 	}
 	
