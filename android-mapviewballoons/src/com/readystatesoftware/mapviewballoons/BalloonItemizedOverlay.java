@@ -42,7 +42,6 @@ public abstract class BalloonItemizedOverlay<Item extends OverlayItem> extends I
 
 	private MapView mapView;
 	private BalloonOverlayView<Item> balloonView;
-	private View clickRegion;
 	private int viewOffset;
 	final MapController mc;
 	private Item currentFocussedItem;
@@ -165,23 +164,8 @@ public abstract class BalloonItemizedOverlay<Item extends OverlayItem> extends I
 		return new OnTouchListener() {
 			public boolean onTouch(View v, MotionEvent event) {
 				
-				View l =  ((View) v.getParent()).findViewById(R.id.balloon_main_layout);
-				Drawable d = l.getBackground();
-				
-				if (event.getAction() == MotionEvent.ACTION_DOWN) {
-					int[] states = {android.R.attr.state_pressed};
-					if (d.setState(states)) {
-						d.invalidateSelf();
-					}
-					return true;
-				} else if (event.getAction() == MotionEvent.ACTION_UP) {
-					int newStates[] = {};
-					if (d.setState(newStates)) {
-						d.invalidateSelf();
-					}
-					// call overridden method
-					onBalloonTap(currentFocussedIndex, currentFocussedItem);
-					return true;
+				if (event.getAction() == MotionEvent.ACTION_UP) {
+					return onBalloonTap(currentFocussedIndex, currentFocussedItem);
 				} else {
 					return false;
 				}
@@ -223,8 +207,7 @@ public abstract class BalloonItemizedOverlay<Item extends OverlayItem> extends I
 		boolean isRecycled;
 		if (balloonView == null) {
 			balloonView = createBalloonOverlayView();
-			clickRegion = (View) balloonView.findViewById(R.id.balloon_inner_layout);
-			clickRegion.setOnTouchListener(createBalloonTouchListener());
+			balloonView.setOnTouchListener(createBalloonTouchListener());
 			isRecycled = false;
 		} else {
 			isRecycled = true;

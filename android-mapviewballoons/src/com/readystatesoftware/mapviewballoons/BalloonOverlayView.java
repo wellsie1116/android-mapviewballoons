@@ -16,8 +16,10 @@
 package com.readystatesoftware.mapviewballoons;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -47,6 +49,7 @@ public class BalloonOverlayView<Item extends OverlayItem> extends FrameLayout {
 	private LinearLayout layout;
 	private TextView title;
 	private TextView snippet;
+	private OnTouchListener customTouchListener;
 
 	/**
 	 * Create a new BalloonOverlayView.
@@ -76,12 +79,30 @@ public class BalloonOverlayView<Item extends OverlayItem> extends FrameLayout {
 			}
 		});
 
+		//set up our touch event handler
+		View clickRegion = v.findViewById(R.id.balloon_inner_layout);
+		clickRegion.setOnTouchListener(touchListener);
+		customTouchListener = defaultCustomTouchListener;
+		
 		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
 				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		params.gravity = Gravity.NO_GRAVITY;
-
+		
 		addView(layout, params);
 
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see android.view.View#setOnTouchListener(android.view.View.OnTouchListener)
+	 */
+	@Override 
+	public void setOnTouchListener(OnTouchListener listener) {
+		if (listener == null) {
+			customTouchListener = defaultCustomTouchListener;
+		} else {
+			customTouchListener = listener;
+		}
 	}
 	
 	/**
@@ -105,7 +126,38 @@ public class BalloonOverlayView<Item extends OverlayItem> extends FrameLayout {
 		} else {
 			snippet.setVisibility(GONE);
 		}
-		
 	}
+	
+	private OnTouchListener touchListener = new OnTouchListener() {
+		
+		@Override
+		public boolean onTouch(View v, MotionEvent event) {
+			View l =  ((View) getParent()).findViewById(R.id.balloon_main_layout);
+			Drawable d = l.getBackground();
+			
+			if (event.getAction() == MotionEvent.ACTION_DOWN) {
+				int[] states = {android.R.attr.state_pressed};
+				if (d.setState(states)) {
+					d.invalidateSelf();
+				}
+				customTouchListener.onTouch(v, event);
+				return true;
+			} else if (event.getAction() == MotionEvent.ACTION_UP) {
+				int newStates[] = {};
+				if (d.setState(newStates)) {
+					d.invalidateSelf();
+				}
+			}
+			
+			return customTouchListener.onTouch(v, event);
+		}
+	};
+	
+	private static OnTouchListener defaultCustomTouchListener = new OnTouchListener() {
+		@Override
+		public boolean onTouch(View v, MotionEvent event) {
+			return false;
+		}
+	};
 
 }
