@@ -36,6 +36,8 @@ import com.google.android.maps.OverlayItem;
  * An abstract extension of ItemizedOverlay for displaying an information balloon
  * upon screen-tap of each marker overlay.
  * 
+ * @param <Item> The OverlayItem to contain
+ * 
  * @author Jeff Gilfelt
  */
 public abstract class BalloonItemizedOverlay<Item extends OverlayItem> extends ItemizedOverlay<Item> {
@@ -72,6 +74,12 @@ public abstract class BalloonItemizedOverlay<Item extends OverlayItem> extends I
 	public void setBalloonBottomOffset(int pixels) {
 		viewOffset = pixels;
 	}
+	
+	/**
+	 * Get the balloon's bottom offset
+	 * 
+	 * @return The bottom offset
+	 */
 	public int getBalloonBottomOffset() {
 		return viewOffset;
 	}
@@ -118,6 +126,8 @@ public abstract class BalloonItemizedOverlay<Item extends OverlayItem> extends I
 	/**
 	 * Creates the balloon view. Override to create a sub-classed view that
 	 * can populate additional sub-views.
+	 * 
+	 * @return A new instance of BalloonOverlayView 
 	 */
 	protected BalloonOverlayView createBalloonOverlayView() {
 		return new BalloonOverlayView(getMapView().getContext(), getBalloonBottomOffset());
@@ -126,6 +136,8 @@ public abstract class BalloonItemizedOverlay<Item extends OverlayItem> extends I
 	/**
 	 * Expose map view to subclasses.
 	 * Helps with creation of balloon views. 
+	 * 
+	 * @return The associated MapView
 	 */
 	protected MapView getMapView() {
 		return mapView;
