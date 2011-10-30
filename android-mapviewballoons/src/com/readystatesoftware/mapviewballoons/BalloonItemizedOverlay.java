@@ -20,9 +20,7 @@ package com.readystatesoftware.mapviewballoons;
 import java.util.List;
 
 import android.graphics.drawable.Drawable;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
 
 import com.google.android.maps.GeoPoint;
@@ -31,6 +29,7 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
+import com.readystatesoftware.mapviewballoons.BalloonOverlayView.OnTapListener;
 
 /**
  * An abstract extension of ItemizedOverlay for displaying an information balloon
@@ -172,16 +171,11 @@ public abstract class BalloonItemizedOverlay<Item extends OverlayItem> extends I
 	 * Sets the onTouchListener for the balloon being displayed, calling the
 	 * overridden {@link #onBalloonTap} method.
 	 */
-	private OnTouchListener createBalloonTouchListener() {
-		return new OnTouchListener() {
-			public boolean onTouch(View v, MotionEvent event) {
-				
-				if (event.getAction() == MotionEvent.ACTION_UP) {
-					return onBalloonTap(currentFocussedIndex, currentFocussedItem);
-				} else {
-					return false;
-				}
-				
+	private OnTapListener createBalloonTapListener() {
+		return new OnTapListener() {
+			@Override
+			public boolean onTap(View v) {
+				return onBalloonTap(currentFocussedIndex, currentFocussedItem);
 			}
 		};
 	}
@@ -219,7 +213,7 @@ public abstract class BalloonItemizedOverlay<Item extends OverlayItem> extends I
 		boolean isRecycled;
 		if (balloonView == null) {
 			balloonView = createBalloonOverlayView();
-			balloonView.setOnTouchListener(createBalloonTouchListener());
+			balloonView.setOnTapListener(createBalloonTapListener());
 			isRecycled = false;
 		} else {
 			isRecycled = true;

@@ -47,7 +47,7 @@ public class BalloonOverlayView extends FrameLayout {
 	private LinearLayout layout;
 	private TextView titleView;
 	private TextView snippetView;
-	private OnTouchListener customTouchListener;
+	private OnTapListener customTapListener;
 
 	/**
 	 * Create a new BalloonOverlayView.
@@ -70,17 +70,13 @@ public class BalloonOverlayView extends FrameLayout {
 		titleView = (TextView) v.findViewById(R.id.balloon_item_title);
 		snippetView = (TextView) v.findViewById(R.id.balloon_item_snippet);
 
-		ImageView close = (ImageView) v.findViewById(R.id.close_img_button);
-		close.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				layout.setVisibility(GONE);
-			}
-		});
+		ImageView details = (ImageView) v.findViewById(R.id.details_img_button);
+		details.setOnTouchListener(touchListener);
 
 		//set up our touch event handler
 		View clickRegion = v.findViewById(R.id.balloon_inner_layout);
 		clickRegion.setOnTouchListener(touchListener);
-		customTouchListener = defaultCustomTouchListener;
+		customTapListener = defaultTapListener;
 		
 		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
 				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
@@ -90,16 +86,16 @@ public class BalloonOverlayView extends FrameLayout {
 
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see android.view.View#setOnTouchListener(android.view.View.OnTouchListener)
+	/**
+	 * Register a callback to be invoked when a tap event is generated from this view.
+	 * 
+	 * @param listener the tap listener to attach to this view
 	 */
-	@Override 
-	public void setOnTouchListener(OnTouchListener listener) {
+	public void setOnTapListener(OnTapListener listener) {
 		if (listener == null) {
-			customTouchListener = defaultCustomTouchListener;
+			customTapListener = defaultTapListener;
 		} else {
-			customTouchListener = listener;
+			customTapListener = listener;
 		}
 	}
 	
@@ -136,24 +132,39 @@ public class BalloonOverlayView extends FrameLayout {
 				if (d.setState(states)) {
 					d.invalidateSelf();
 				}
-				customTouchListener.onTouch(v, event);
 				return true;
 			} else if (event.getAction() == MotionEvent.ACTION_UP) {
 				int newStates[] = {};
 				if (d.setState(newStates)) {
 					d.invalidateSelf();
 				}
+				return customTapListener.onTap(v);
+			} else {
+				return false;
 			}
-			
-			return customTouchListener.onTouch(v, event);
 		}
 	};
 	
-	private static OnTouchListener defaultCustomTouchListener = new OnTouchListener() {
+	private static OnTapListener defaultTapListener = new OnTapListener() {
 		@Override
-		public boolean onTouch(View v, MotionEvent event) {
+		public boolean onTap(View v) {
 			return false;
 		}
 	};
+	
+	/**
+	 * Interface definition for a callback to be invoked
+	 * when a tap event is dispatched to this balloon
+	 */
+	public interface OnTapListener {
+		
+		/**
+		 * Called when a balloon is tapped.
+		 * 
+		 * @param view The view the touch event has been dispatched to.
+		 * @return True if the listener has consumed the event, false otherwise. 
+		 */
+		public boolean onTap(View view);
+	}
 
 }
