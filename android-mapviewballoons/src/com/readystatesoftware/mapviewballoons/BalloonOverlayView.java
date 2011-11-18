@@ -74,7 +74,7 @@ public class BalloonOverlayView extends FrameLayout {
 		details.setOnTouchListener(touchListener);
 
 		//set up our touch event handler
-		View clickRegion = v.findViewById(R.id.balloon_inner_layout);
+		View clickRegion = v.findViewById(R.id.balloon_main_layout);
 		clickRegion.setOnTouchListener(touchListener);
 		customTapListener = defaultTapListener;
 		
@@ -124,8 +124,7 @@ public class BalloonOverlayView extends FrameLayout {
 		
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
-			View l =  ((View) getParent()).findViewById(R.id.balloon_main_layout);
-			Drawable d = l.getBackground();
+			Drawable d = v.getBackground();
 			
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
 				int[] states = {android.R.attr.state_pressed};
