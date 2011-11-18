@@ -125,6 +125,9 @@ public class BalloonOverlayView extends FrameLayout {
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
 			Drawable d = v.getBackground();
+			if (d == null) {
+				d = ((View)v.getParent()).getBackground();
+			}
 			
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
 				int[] states = {android.R.attr.state_pressed};
